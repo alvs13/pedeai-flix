@@ -21,9 +21,9 @@ services:
       - key: DEMO_WITHOUT_DB
         value: false
       - key: ALLOW_EXTERNAL_EMBEDS
-        value: false
+        value: true
       - key: ALLOW_PUBLIC_EMBEDS
-        value: false
+        value: true
       - key: EMBEDMOVIES_BASE_URL
         value: https://myembed.biz
       - key: TMDB_API_KEY
