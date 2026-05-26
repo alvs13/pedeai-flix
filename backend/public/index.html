@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StreamBox Admin</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script defer src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <body>
+    <section id="login" class="login-shell">
+      <form class="login-panel" id="loginForm">
+        <span class="brand-mark">SB</span>
+        <h1>StreamBox Admin</h1>
+        <p>Gerencie apenas conteudos proprios, autorizados ou licenciados.</p>
+        <label>E-mail<input id="email" type="email" value="admin@streambox.app" autocomplete="email" /></label>
+        <label>Senha<input id="password" type="password" value="streambox" autocomplete="current-password" /></label>
+        <button class="primary" type="submit"><i data-lucide="log-in"></i> Entrar</button>
+        <small id="loginError"></small>
+      </form>
+    </section>
+
+    <section id="app" class="app-shell hidden">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">SB</span><strong>StreamBox</strong></div>
+        <button data-view="dashboard" class="active" onclick="setAdminView('dashboard', this)"><i data-lucide="layout-dashboard"></i> Dashboard</button>
+        <button data-view="movies" onclick="setAdminView('movies', this)"><i data-lucide="clapperboard"></i> Filmes</button>
+        <button data-view="channels" onclick="setAdminView('channels', this)"><i data-lucide="tv"></i> Canais ao vivo</button>
+        <button data-view="categories" onclick="setAdminView('categories', this)"><i data-lucide="tags"></i> Categorias</button>
+        <button data-view="sources" onclick="setAdminView('sources', this)"><i data-lucide="database-zap"></i> Fontes</button>
+        <button data-view="embedmovies" onclick="setAdminView('embedmovies', this)"><i data-lucide="panel-top"></i> EmbedMovies</button>
+        <button data-view="files" onclick="setAdminView('files', this)"><i data-lucide="file-up"></i> Importar arquivo</button>
+        <button data-view="users" onclick="setAdminView('users', this)"><i data-lucide="users"></i> Usuarios</button>
+        <button data-view="logs" onclick="setAdminView('logs', this)"><i data-lucide="scroll-text"></i> Logs</button>
+        <button id="logout"><i data-lucide="log-out"></i> Sair</button>
+      </aside>
+      <main>
+        <header class="topbar">
+          <div>
+            <h1 id="viewTitle">Dashboard</h1>
+            <p>Operacao legal, revisavel e pronta para crescer.</p>
+          </div>
+          <span id="status">Online</span>
+        </header>
+        <section id="content"></section>
+      </main>
+    </section>
+    <script src="/app.js?v=admin-categories-2"></script>
+  </body>
+</html>

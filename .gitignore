@@ -1,0 +1,16 @@
+.gradle/
+.idea/
+build/
+local.properties
+*.iml
+app/build/
+captures/
+.externalNativeBuild/
+.cxx/
+backend/node_modules/
+backend/.env
+backend/data/
+backend/*.log
+*.png
+window.xml
+npm-debug.log*

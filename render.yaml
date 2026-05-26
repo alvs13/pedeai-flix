@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: streambox
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm run db:setup && npm start
+    healthCheckPath: /api/public/config
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: API_TOKEN_ENCRYPTION_SECRET
+        generateValue: true
+      - key: DEMO_WITHOUT_DB
+        value: false
+      - key: ALLOW_EXTERNAL_EMBEDS
+        value: false
+      - key: ALLOW_PUBLIC_EMBEDS
+        value: false
+      - key: EMBEDMOVIES_BASE_URL
+        value: https://myembed.biz
+      - key: TMDB_API_KEY
+        sync: false

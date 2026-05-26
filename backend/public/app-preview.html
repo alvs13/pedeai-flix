@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StreamBox</title>
+    <link rel="stylesheet" href="/app-preview.css?v=category-click-fix-2" />
+  </head>
+  <body>
+    <main class="phone-shell">
+      <header class="appbar">
+        <div class="logo">S</div>
+        <button class="nav-pill active" data-view="home">Inicio</button>
+        <button class="nav-pill" data-view="movies">Filmes</button>
+        <button class="nav-pill" data-view="series">Séries</button>
+        <button class="nav-pill" data-view="channels">TV</button>
+        <button class="nav-pill" data-view="profile">Perfil</button>
+      </header>
+
+      <section class="search-strip">
+        <input id="search" placeholder="Pesquisar filmes, canais e categorias" />
+        <button id="clearSearch">Limpar</button>
+      </section>
+
+      <section id="hero" class="hero">
+        <div class="hero-shade"></div>
+        <div>
+          <span id="heroTag">Filme em destaque</span>
+          <h1 id="heroTitle">StreamBox</h1>
+          <p id="heroText">Conteudo legal, proprio ou licenciado.</p>
+          <div class="hero-actions">
+            <button id="playHero" class="watch-primary" data-action="play-hero">▶ Assistir agora</button>
+            <button id="detailsHero" data-action="details-hero">Detalhes</button>
+            <button id="favoriteHero" data-action="favorite-hero">Favoritar</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="spotlightSection" class="content-section spotlight-section front-showcase">
+        <div class="section-title">
+          <h2>Entrou agora no StreamBox</h2>
+          <span>Capas em destaque</span>
+        </div>
+        <div id="spotlightGrid" class="spotlight-grid"></div>
+      </section>
+
+      <section id="quickSection" class="quick-grid">
+        <button data-view="movies"><strong>Filmes</strong><span>Catálogo completo</span></button>
+        <button data-view="series"><strong>Séries</strong><span>Temporadas e episódios</span></button>
+        <button data-view="channels"><strong>TV ao vivo</strong><span>Canais e grade</span></button>
+      </section>
+
+      <section id="chips" class="chips">
+        <button class="active" data-filter="all">Tudo</button>
+      </section>
+
+      <section id="continueSection" class="content-section">
+        <div class="section-title">
+          <h2>Atualizados recentemente</h2>
+          <span>Vitrine</span>
+        </div>
+        <div id="continueList" class="wide-row"></div>
+      </section>
+
+      <section id="moviesSection" class="content-section">
+        <div class="section-title">
+          <h2 id="moviesTitle">Filmes novos e atualizados</h2>
+          <span id="moviesSubtitle">Vitrine principal</span>
+        </div>
+        <div id="movies" class="poster-grid"></div>
+        <div id="moviesPager" class="pager" hidden></div>
+      </section>
+
+      <section id="seriesSection" class="content-section">
+        <div class="section-title">
+          <h2>Séries</h2>
+          <span>Episódios</span>
+        </div>
+        <div id="series" class="poster-grid"></div>
+      </section>
+
+      <section id="channelsSection" class="content-section">
+        <div class="section-title">
+          <h2>Canais ao vivo</h2>
+          <span>HLS</span>
+        </div>
+        <div id="channels" class="channel-grid"></div>
+      </section>
+
+      <section id="guideSection" class="content-section">
+        <div class="section-title">
+          <h2>Grade TV</h2>
+          <span>Agora</span>
+        </div>
+        <div id="tvGuide" class="tv-guide"></div>
+      </section>
+
+      <section id="genreSections" class="genre-sections"></section>
+
+      <section id="topSection" class="content-section">
+        <div class="section-title">
+          <h2>Top 10 hoje</h2>
+          <span>Populares</span>
+        </div>
+        <div id="topList" class="top-row"></div>
+      </section>
+
+      <section id="collectionsSection" class="content-section">
+        <div class="section-title">
+          <h2>Colecoes</h2>
+          <span>Curadoria</span>
+        </div>
+        <div class="collection-grid">
+          <article style="--cover:url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=900&q=80')"><strong>Espaco e ciencia</strong><span>NASA, docs e canais</span></article>
+          <article style="--cover:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80')"><strong>Natureza</strong><span>Relax, paisagens e samples</span></article>
+          <article style="--cover:url('https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=900&q=80')"><strong>Curtas premium</strong><span>Open movies e demos</span></article>
+        </div>
+      </section>
+
+      <section id="profileSection" class="content-section" hidden>
+        <div class="section-title"><h2>Perfil</h2><span>Demo</span></div>
+        <div class="profile-stack">
+          <article><strong>Usuario demo</strong><p>Historico, favoritos e preferencias do usuario.</p></article>
+          <article><strong>Plano legal</strong><p>Somente filmes, canais e videos autorizados/licenciados.</p></article>
+          <article><strong>Android TV</strong><p>Layout com foco visual e controle por direcional.</p></article>
+        </div>
+      </section>
+
+      <nav class="bottom-nav">
+        <button class="active" data-view="home">Inicio</button>
+        <button data-view="movies">Filmes</button>
+        <button data-view="series">Séries</button>
+        <button data-view="channels">TV</button>
+      </nav>
+    </main>
+
+    <dialog id="playerDialog">
+      <button id="closePlayer">Fechar</button>
+      <h2 id="playerTitle">Player</h2>
+      <video id="player" controls autoplay playsinline></video>
+      <div id="embedTools" class="embed-tools" hidden>
+        <span id="embedStatus">Carregando player externo...</span>
+        <button id="reloadEmbed" type="button">Recarregar</button>
+        <button id="openEmbed" type="button">Abrir externo</button>
+      </div>
+      <div id="embedFrameSlot">
+        <iframe id="embedPlayer" title="Embed player" width="100%" height="600" frameborder="0" allowfullscreen loading="eager"></iframe>
+      </div>
+    </dialog>
+
+    <dialog id="detailsDialog" class="details-dialog">
+      <button id="closeDetails">Fechar</button>
+      <div id="detailsContent"></div>
+    </dialog>
+
+    <script src="/vendor/hls/hls.min.js"></script>
+    <script src="/app-preview-live.js?v=category-click-fix-2"></script>
+  </body>
+</html>
