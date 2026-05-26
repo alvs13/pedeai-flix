@@ -14,11 +14,13 @@ Este projeto sobe como um unico servico:
 3. Clique em `New Blueprint Instance`.
 4. Selecione o repositorio do StreamBox.
 5. Confirme o arquivo `render.yaml`.
-6. Em `DATABASE_URL`, cole a URL completa do Supabase. Use o formato:
+6. Em `DATABASE_URL`, use o pooler IPv4 do Supabase no Render. Para este projeto, o formato correto e:
 
 ```text
-postgresql://postgres:SUA-SENHA@db.pkxcatwxvgsjywygaxmk.supabase.co:5432/postgres
+postgresql://postgres.pkxcatwxvgsjywygaxmk:SUA-SENHA-CODIFICADA@aws-1-sa-east-1.pooler.supabase.com:6543/postgres
 ```
+
+Nao use a URL direta `db.pkxcatwxvgsjywygaxmk.supabase.co:5432` no Render free, porque ela resolve por IPv6 e pode falhar com `ENETUNREACH`.
 
 7. Em `TMDB_API_KEY`, coloque sua chave se quiser buscar metadados pelo painel. Pode deixar vazio para publicar sem TMDb.
 8. Clique em `Apply`.
