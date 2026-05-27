@@ -1,4 +1,4 @@
-document.documentElement.dataset.streamboxJs = "stream-engine-5";
+document.documentElement.dataset.streamboxJs = "premium-home-1";
 
 const els = {
   search: document.querySelector("#search"),
@@ -10,6 +10,7 @@ const els = {
   heroTitle: document.querySelector("#heroTitle"),
   heroText: document.querySelector("#heroText"),
   heroTag: document.querySelector("#heroTag"),
+  heroStats: document.querySelector("#heroStats"),
   continueList: document.querySelector("#continueList"),
   spotlightSection: document.querySelector("#spotlightSection"),
   spotlightGrid: document.querySelector("#spotlightGrid"),
@@ -418,6 +419,43 @@ function sortByRecentlyUpdated(items) {
   });
 }
 
+function hasArtwork(item) {
+  return Boolean(item?.backdropUrl || item?.bannerUrl || item?.posterUrl || item?.logoUrl);
+}
+
+function demoPenalty(item) {
+  const haystack = filterKey(`${item?.title || item?.name || ""} ${item?.category || ""} ${item?.description || ""}`);
+  const demoWords = ["demo", "sample", "teste", "open movie", "blender", "sintel", "big buck bunny"];
+  return demoWords.some((word) => haystack.includes(filterKey(word))) ? 12000000000000 : 0;
+}
+
+function homeScore(item) {
+  const year = Number(item?.year) || 0;
+  const time = contentTime(item);
+  const artworkBoost = hasArtwork(item) ? 800000000000 : 0;
+  const streamBoost = isPlayableItem(item) ? 250000000000 : 0;
+  const descriptionBoost = item?.description ? 35000000000 : 0;
+  return (year * 1000000000000) + time + artworkBoost + streamBoost + descriptionBoost - demoPenalty(item);
+}
+
+function sortForHome(items) {
+  return uniqueById(items)
+    .filter((item) => item && (item.title || item.name))
+    .sort((a, b) => {
+      const scoreDiff = homeScore(b) - homeScore(a);
+      if (scoreDiff) return scoreDiff;
+      return String(a.title || a.name || "").localeCompare(String(b.title || b.name || ""), "pt-BR");
+    });
+}
+
+function pickHomeHero(items) {
+  const ranked = sortForHome(items);
+  return ranked.find(hasArtwork)
+    || ranked.find(isPlayableItem)
+    || ranked[0]
+    || null;
+}
+
 function genreName(item) {
   return String(item.category || "Sem categoria").trim() || "Sem categoria";
 }
@@ -580,16 +618,17 @@ function renderShowcaseSections(items) {
     return;
   }
 
+  const homeItems = sortForHome(items);
   const newestYear = Math.max(...items.map((item) => Number(item.year) || 0));
-  const updated = sortByRecentlyUpdated(items).slice(8, 24);
-  const releases = sortByFreshness(items.filter((item) => Number(item.year) === newestYear)).slice(0, 18);
+  const updated = homeItems.slice(12, 34);
+  const releases = sortForHome(items.filter((item) => Number(item.year) === newestYear)).slice(0, 18);
   const strongGenres = groupedByGenre(items)
     .filter((group) => ["Drama", "Comedia", "Acao", "Terror", "Documentario", "Thriller"].some((name) => filterKey(name) === filterKey(group.name)))
     .slice(0, 3);
   const sections = [
-    { title: "Acabaram de chegar", label: "Atualizados", items: updated },
-    { title: `Lancamentos ${newestYear}`, label: "Mais novos", items: releases },
-    ...strongGenres.map((group) => ({ title: `Novos em ${group.name}`, label: `${group.items.length} titulos`, items: group.items.slice(0, 18) }))
+    { title: "Destaques recentes", label: "Atualizados agora", items: updated },
+    { title: `Filmes de ${newestYear}`, label: "Ano mais novo", items: releases },
+    ...strongGenres.map((group) => ({ title: `Novos em ${group.name}`, label: `${group.items.length} titulos`, items: sortForHome(group.items).slice(0, 18) }))
   ].filter((section) => section.items.length);
 
   els.genreSections.hidden = !sections.length;
@@ -606,7 +645,7 @@ function renderShowcaseSections(items) {
 
 function renderSpotlight(items) {
   if (!els.spotlightGrid) return;
-  const spotlightItems = uniqueById(sortByRecentlyUpdated(items))
+  const spotlightItems = sortForHome(items)
     .filter((item) => item.backdropUrl || item.bannerUrl || item.posterUrl)
     .slice(0, 6);
 
@@ -622,14 +661,15 @@ function sectionCover(items, fallback = fallbackImage) {
 function renderQuickHub() {
   if (!els.quickSection) return;
   const movieGenres = groupedByGenre(catalog.movies).slice(0, 4).map((group) => group.name).join(" - ");
+  const homeMovies = sortForHome(catalog.movies);
   const hubs = [
     {
       view: "movies",
       label: "Filmes",
       meta: `${catalog.movies.length} titulos`,
       text: movieGenres || "Lancamentos, ação, drama e mais",
-      cover: sectionCover(catalog.movies),
-      sample: catalog.movies.slice(0, 3).map((item) => item.title).join(" - ")
+      cover: sectionCover(homeMovies),
+      sample: homeMovies.slice(0, 3).map((item) => item.title).join(" - ")
     },
     {
       view: "series",
@@ -667,27 +707,33 @@ function render() {
   renderQuickHub();
   const items = filtered();
   const homeMode = activeView === "home" && activeFilter === "all";
-  const hero = homeMode ? (catalog.movies.find(isPlayableItem) || catalog.movies[0]) : (items.movies[0] || catalog.movies[0]);
+  const homeMovies = sortForHome(catalog.movies);
+  const hero = homeMode ? pickHomeHero(catalog.movies) : (sortForHome(items.movies)[0] || homeMovies[0]);
   heroItem = hero || null;
   if (hero) {
     els.heroTitle.textContent = hero.title;
     els.heroText.textContent = hero.description || "Conteudo autorizado disponivel agora.";
     els.heroTag.textContent = hero.category || "Filme em destaque";
-    els.hero.style.backgroundImage = `linear-gradient(0deg, #07070a 0%, rgba(7,7,10,.18) 58%), linear-gradient(90deg, rgba(7,7,10,.88), rgba(7,7,10,.14)), url("${hero.backdropUrl || hero.posterUrl || fallbackImage}")`;
+    if (els.heroStats) {
+      const year = hero.year ? `<span>${safe(hero.year)}</span>` : "";
+      const category = hero.category ? `<span>${safe(hero.category)}</span>` : "";
+      els.heroStats.innerHTML = `${category}${year}<span>${catalog.movies.length} filmes no catalogo</span>`;
+    }
+    els.hero.style.backgroundImage = `linear-gradient(0deg, #07070a 0%, rgba(7,7,10,.2) 54%), linear-gradient(90deg, rgba(7,7,10,.9), rgba(7,7,10,.18) 58%, rgba(7,7,10,.66)), url("${hero.backdropUrl || hero.bannerUrl || hero.posterUrl || fallbackImage}")`;
   }
 
   const moviePageData = pageItems(items.movies, moviePage, moviesPerPage);
-  const visibleMovies = homeMode ? sortByFreshness(catalog.movies).slice(0, 24) : moviePageData.items;
+  const visibleMovies = homeMode ? homeMovies.slice(0, 30) : moviePageData.items;
   moviePage = moviePageData.page;
-  if (els.moviesTitle) els.moviesTitle.textContent = activeFilter !== "all" ? activeFilter : homeMode ? "Filmes novos e atualizados" : "Todos os filmes";
-  if (els.moviesSubtitle) els.moviesSubtitle.textContent = activeFilter !== "all" ? `${items.movies.length} filmes encontrados` : homeMode ? "Vitrine principal" : `${items.movies.length} titulos`;
-  els.continueList.innerHTML = sortByRecentlyUpdated(catalog.movies).slice(0, 8).map(wideCard).join("");
+  if (els.moviesTitle) els.moviesTitle.textContent = activeFilter !== "all" ? activeFilter : homeMode ? "Lancamentos e novidades" : "Todos os filmes";
+  if (els.moviesSubtitle) els.moviesSubtitle.textContent = activeFilter !== "all" ? `${items.movies.length} filmes encontrados` : homeMode ? "Mais recentes" : `${items.movies.length} titulos`;
+  els.continueList.innerHTML = homeMovies.slice(6, 16).map(wideCard).join("");
   els.movies.innerHTML = items.movies.length ? visibleMovies.map(movieCard).join("") : `<div class="empty">Nenhum filme encontrado.</div>`;
   renderMoviePager(homeMode ? 0 : items.movies.length, moviePageData.page, moviePageData.totalPages);
   renderSpotlight(catalog.movies);
   renderShowcaseSections(catalog.movies);
   els.series.innerHTML = items.series.length ? items.series.map(seriesCard).join("") : `<div class="empty">Nenhuma serie encontrada.</div>`;
-  els.topList.innerHTML = catalog.movies.slice(0, 10).map(topCard).join("");
+  els.topList.innerHTML = homeMovies.slice(0, 10).map(topCard).join("");
   els.channels.innerHTML = items.channels.length ? items.channels.map(channelCard).join("") : `<div class="empty">Nenhum canal encontrado.</div>`;
   els.tvGuide.innerHTML = catalog.channels.slice(0, 5).map(guideRow).join("");
   bindCards();
